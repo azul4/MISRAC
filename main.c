@@ -49,7 +49,7 @@ void analyze_sentence(const char aBuf[])
     if(aBuf[0] == '#'){ //#define, #include ...
         strcpy(aHeaderIncluded[iHeaderStackPointer++], aBuf);
     } else if {
-
+        ;
     }
 }
 
