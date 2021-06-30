@@ -42,6 +42,7 @@ void check_MISRA_C_rules(void)
 {
     //check_Rule_2();
     //check_Rule_3();
+    //check_Rule_4();
 } 
 
 void analyze_sentence(const char aBuf[])
