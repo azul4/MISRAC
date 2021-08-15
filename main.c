@@ -1,3 +1,21 @@
+#include <stdio.h>
+#include "getSource.h"
+
+int main()
+{
+    char fileName[30];
+    printf("enter source file name\n");
+    scanf("%s", fileName);
+    if (!openSource(fileName)) {
+        return;
+    } 
+    if (compile()) {
+        execute();
+    }
+    closeSource();
+}
+
+#if 0
 #include "main.h"
 
 char aHeaderIncluded[3][20] = {0};
@@ -13,8 +31,10 @@ int main()
     init_info(&source_info);
 
     if((fp = fopen(path, "r")) != NULL) {
+
         batch_analyze(fp, &source_info);
         analyze_structure(fp);
+
         while(fgets(aBuf, sizeof(aBuf), fp) != NULL) {
             analyze_sentence(fp);
         }
@@ -49,7 +69,7 @@ void analyze_sentence(const char aBuf[])
 {
     if(aBuf[0] == '#'){ //#define, #include ...
         strcpy(aHeaderIncluded[iHeaderStackPointer++], aBuf);
-    } else if {
+    } else { //
         ;
     }
 }
@@ -95,3 +115,4 @@ int get_main(FILE* fp)
 
     return main_line;
 }
+#endif

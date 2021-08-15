@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include "const.h"
 
 typedef struct _CodeInfo {
     int current_line;
