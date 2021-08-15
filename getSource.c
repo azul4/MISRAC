@@ -1,9 +1,11 @@
 #include "getSource.h"
 
 #define MAXLINE 120 //한 줄의 최대 문자 수
+#define MAXERROR 30 // 이 이상의 오류가 있다면 종료
 #define MAXNUM  14   //상수의 최대 자리수
 #define TAB 4 //탭의 공백 수
 
+#define TYPE_C "#00FF00" //타입 오류의 문자 색
 
 static FILE* fpi; //소스파일
 static FILE* fptex; //레이텍 출력 파일
@@ -22,6 +24,7 @@ static int spaces;  //그 토큰 앞의 공백 개수
 static int CR;      //그 앞에 있는 CR의 개수
 static int printed; //토큰 인쇄했는지? 
 
+static int errorNo = 0; //출력한 오류의 수
 
 static void printcToken(void);  //토큰 출력
 
@@ -136,6 +139,10 @@ static void initCharClassT() //선언 안되어있음
     charClassT[':'] = colon;
 }
 
+//====================================================================================
+// 함수명 : nextChar
+// 
+//====================================================================================
 char nextChar()
 {
     char ch;
@@ -169,7 +176,7 @@ Token nextToken()
     Token       temp;
     char        ident[MAXNAME];
 
-    printcToken(); // 앞의 토큰 출력 - 여기 해야함
+    printcToken(); // 앞의 토큰 출력
     spaces = 0;
     CR = 0;
     while(1) {
@@ -203,7 +210,7 @@ Token nextToken()
             ident[i] = '\0';
             for (i = 0; i < end_of_KeyWd; i++) {
                 if(strcmp(ident, KeyWdT[i].word) == 0) {
-                    temp.kind = KeyWdT[i].keyID; //???
+                    temp.kind = KeyWdT[i].keyId; //???
                     cToken = temp;
                     printed = 0; 
                     return temp;
@@ -292,13 +299,51 @@ static void printcToken(void)
     }
     else if (i < end_of_KeySym) //연산자인지 구분 기호인지
     {
-        fprintf
+        fprintf(fptex, "$%s$", KeyWdT[i].word);
     }
     else if (i == (int)Id)
     { //식별자라면
+        switch(idKind) {
+            case varId : {
+                fprintf(fptex, "%s", cToken.u.id); return;
+            }
+            case parId: {
+                fprintf(fptex, "<i>%s</i>", cToken.u.id); return;
+            }
+            case funcId: {
+                fprintf(fptex, "<i>%s</i>", cToken.u.id); return;
+            }
+            case constId: {
+                fprintf(fptex, "<tt>%s</tt>", cToken.u.id); return;
+            }
+            default : break;
+        }
     }
     else if (i == (int)Num)
     { //숫자라면
         fprintf(fptex, "%d", cToken.u.value);
     }
 }
+//====================================================================================
+// 함수명 : errorNoCheck
+// 오류 개수를 체크하고 MAXERROR 값보다 더 크면 종료합니다.
+//====================================================================================
+void errorNoCheck()
+{
+    if(errorNo++ > MAXERROR)
+    {
+        fprintf(fptex, "too many errors\n</PRE>\n</BODY>\n</HTML>");
+        exit(1);
+    }
+}
+
+//====================================================================================
+// 함수명 : errorMessage
+// 오류 메세지를 html 파일에 출력합니다.
+//====================================================================================
+void errorMessage(char *m)
+{
+    fprintf(fptex, "<FONT COLOR=%s>%s</FONT>", TYPE_C, m);
+    errorNoCheck();
+}
+

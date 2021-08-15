@@ -1,1 +1,5 @@
 # 진행 상황을 메모해 둡니다.
+
+0815
+getSource.c :: printcToken()   완성
+codegen.c   :: execute()       진행중

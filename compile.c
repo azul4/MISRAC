@@ -39,6 +39,3 @@ int compile()
 
     return i < MINERROR;    //오류 메세지의 개수가 적은지 확인
 }
-
-
-#endif
