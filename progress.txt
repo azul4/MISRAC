@@ -3,3 +3,7 @@
 0815
 getSource.c :: printcToken()   완성
 codegen.c   :: execute()       진행중
+
+0816
+codegen.c   :: execute()       완성
+main.c      :: closeSource()   필요
