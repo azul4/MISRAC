@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "getsource.h": "c"
+        "getsource.h": "c",
+        "codegen.h": "c"
     }
 }

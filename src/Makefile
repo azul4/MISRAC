@@ -2,7 +2,7 @@ CC = gcc
 OBJ = obj
 #VPATH = $(DIRS: =;)
 
-TARGET = sender.out
+TARGET = compiler.out
 
 DIRS = ./main
 SRCS = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
@@ -11,15 +11,16 @@ SRCS += $(foreach dir, $(DIRS), $(wildcard $(dir)/*/*.c))
 OBJS = $(SRCS:.c=.o)
 TEMP = $(notdir $(OBJS))
 
+%.o: %.c
+	$(CC) -c -o $(OBJ)/$(notdir $@) $< -g
+
 all: $(TARGET) 
 	
 $(TARGET) : $(OBJS)
-	cd $(OBJ); \
 	$(CC) -o $(TARGET) $(TEMP) -g ; \
 	mv $(TARGET) ..\
 
-%.o: %.c
-	$(CC) -c -o $(OBJ)/$(notdir $@) $< -g
+
 
 clean :
 	rm -rf $(OBJ) \
