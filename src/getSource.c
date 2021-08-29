@@ -1,11 +1,13 @@
 #include "getSource.h"
 
-#define MAXLINE 120 //한 줄의 최대 문자 수
-#define MAXERROR 30 // 이 이상의 오류가 있다면 종료
-#define MAXNUM  14   //상수의 최대 자리수
-#define TAB 4 //탭의 공백 수
+#define MAXLINE         120 //한 줄의 최대 문자 수
+#define MAXERROR        30 // 이 이상의 오류가 있다면 종료
+#define MAXNUM          14   //상수의 최대 자리수
+#define TAB             4 //탭의 공백 수
 
-#define TYPE_C "#00FF00" //타입 오류의 문자 색
+#define INSERT_C        "#0000FF" // 삽입 문자의 색
+#define TYPE_C          "#00FF00" //타입 오류의 문자 색
+#define DELETE_C        "#FF0000" // 제거 문자의 색
 
 static FILE* fpi; //소스파일
 static FILE* fptex; //레이텍 출력 파일
@@ -68,6 +70,31 @@ static struct keyWd KeyWdT[] = { /*예약어, 기호, 이름(KeyID)의 테이블
     {" := ", Assign },
     {" $dummy2 ", end_of_KeySym }
 };
+
+//====================================================================================
+// 함수명 : isKeyWd
+// 키 k가 예약어인지 판단합니다.
+// True  리턴 : k가 begin, if, then, while... 일때 
+// False 리턴 : k가 +, -, *, / ... 일때
+//====================================================================================
+int isKeyWd(KeyId k)
+{
+    return (k < end_of_KeyWd);
+}
+
+//====================================================================================
+// 함수명 : isKeySym
+// 키 k가 기호인지 판단합니다.
+// 0     리턴 : k가 begin, if, then, while... 일때 
+// True  리턴 : k가 +, -, *, / ... 일때
+// False 리턴 : 이외의 값
+//====================================================================================
+int isKeySym(KeyId k)
+{
+    if (k < end_of_KeyWd) return 0;
+    else return (k < end_of_KeySym);
+}
+
 
 int openSource(char fileName[]) // 소스 파일 열기
 {
@@ -276,6 +303,31 @@ Token nextToken()
     printed = 0;
     return temp;
 }
+//====================================================================================
+// 함수명 : printcToken
+// compile.c :: constDecl()에서 불립니다.
+// t.kind == k라면 다음 토큰을 읽어들이고 리턴
+// t.kind != k라면 오류 메시지를 출력, t와 k가 같은 기호 또는 예약어라면
+// t를 버리고 다음 토큰을 읽어 들이고 리턴(t를 k로 변경하게 됨)
+// 이 이외의 경우, k를 삽입한 상태에서 t를 리턴
+//====================================================================================
+
+Token checkGet(Token t, KeyId k)
+{
+    if(t.kind == k) {
+        return nextToken();
+    }
+    if ( (isKeyWd(k) && isKeyWd(t.kind)) ||
+         (isKeySym(k) && isKeySym(t.kind))) {
+        errorDelete();
+        errorInsert(k);
+        return nextToken();
+    }
+    errorInsert(k);
+    return t;
+    
+
+}
 
 //====================================================================================
 // 함수명 : printcToken
@@ -354,6 +406,77 @@ void errorF(char * m)
 void errorMessage(char *m)
 {
     fprintf(fptex, "<FONT COLOR=%s>%s</FONT>", TYPE_C, m);
+    errorNoCheck();
+}
+
+//====================================================================================
+// 함수명 : printSpaces
+// 공백 또는 줄바꿈을 출력합니다.
+//===================================================================================
+static void printSpaces()
+{
+    while (CR-- > 0) {
+        fprintf(fptex, "\n");
+    }
+    while (spaces-- > 0) {
+        fprintf(fptex, " ");
+    }
+    
+    CR = 0;
+    spaces = 0;
+}   
+
+
+//====================================================================================
+// 함수명 : errorDelete
+// 읽어 들인 토큰을 버립니다.
+//====================================================================================
+void errorDelete()
+{
+    int i = 0;
+
+    i = (int)cToken.kind;
+    printSpaces();
+    printed = 1;
+
+    //====================================================================================
+    // i가 예약어라면 
+    //====================================================================================
+    if(i < end_of_KeyWd) { 
+        fprintf(fptex, "<FONT COLOR=%s><b>%s</b></FONT>", DELETE_C, KeyWdT[i].word);
+    }
+    //====================================================================================
+    // i가 예약어라면 
+    //====================================================================================    
+    else if (i < end_of_KeySym) {
+        fprintf(fptex, "<FONT COLOR=%s><b>%s</b></FONT>", DELETE_C, KeyWdT[i].word);
+    }
+    //====================================================================================
+    // i가 예약어라면 
+    //====================================================================================    
+    else if (i == (int)Id) {
+        fprintf(fptex, "<FONT COLOR=%s><b>%s</b></FONT>", DELETE_C, cToken.u.id);
+    }   
+    //====================================================================================
+    // i가 예약어라면 
+    //====================================================================================    
+    else if (i == (int)Num) {
+        fprintf(fptex, "<FONT COLOR=%s><b>%s</b></FONT>", DELETE_C, cToken.u.value);
+    }
+}
+
+//====================================================================================
+// 함수명 : errorInsert
+// keyString(k)를 .html 파일에 삽입합니다.
+//====================================================================================
+void errorInsert(KeyId k)   
+{
+    if(k < end_of_KeyWd) {
+        fprintf(fptex, "\\ \\insert{{\\bf %s}}", KeyWdT[k].word);
+    }
+    else {
+        fprintf(fptex, "<FONT COLOR=%s><b><%s></b></FONT>", INSERT_C, KeyWdT[k].word);
+    }
     errorNoCheck();
 }
 

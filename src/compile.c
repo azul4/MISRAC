@@ -110,7 +110,6 @@ void block(int pIndex)
     statement();                  // 그 블록의 메인 문장
     genCodeR();                   // 리턴 명령
     blockEnd();                   // 블록이 끝났다는 것을 table에 전달
-
 }
 
 void finalSource()
@@ -118,20 +117,31 @@ void finalSource()
 
 }
 
+//====================================================================================
+// 함수명 : constDecl
+// 상수 선언 컴파일
+//====================================================================================
 void constDecl()
 {
     Token temp;
 
     while (1) {
         if(token.kind == Id) {
-
-        }
-        else {
+            setIdKind(constId); // 출력을 위한 정보 설정
+            temp = token;       // 이름을 넣어 둠
+            token = checkGet(nextToken(), Equal); //이름 다음은 무조건 '='
+            if(token.kind == Num) {
+                enterTconst(temp.u.id, token.u.value); //상수 이름과 값을 테이블에 저장
+            } else {
+                errorType("number"); 
+            }
+            token = nextToken();
+        } else {
             errorMissingId();
         }
 
-        if(token.kind != Comma) {
-            if(token.kind == Id) {
+        if(token.kind != Comma) { // 토큰의 종류가 ','라면 상수 선언이 이어짐.
+            if(token.kind == Id) { // 다음이 이름이라면 쉼표를 잊었다는 의미.
                 errorInsert(Comma);
                 continue;
             } else {
@@ -144,9 +154,32 @@ void constDecl()
     token = checkGet(token, Semicolon); // 마지막은 ";"
 }
 
+//====================================================================================
+// 함수명 : varDecl
+// 변수 선언 컴파일
+//====================================================================================
 void varDecl()
 {
+    while(1) {
+        if(token.kind == Id) {
 
+        }
+        else {
+            errorMissingId();
+        }
+
+        if(token.kind != Comma) {
+            if(token.kind == Id) {
+                errorInsert(Comma);
+                continue;
+            }
+            else {
+                break;
+            }
+        }
+        token = nextToken();
+    }
+    token = checkGet(token, Semicolon);
 }
 
 void funcDecl()

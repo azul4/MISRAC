@@ -38,3 +38,4 @@ static void printcToken(void);
 void errorNoCheck();
 void errorF(char * m);
 void errorMessage(char *m);
+Token checkGet(Token t, KeyId k);

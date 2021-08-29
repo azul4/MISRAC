@@ -12,3 +12,13 @@ main.c      :: closeSource()   필요
 table.c     :: blockBegin()    완성
 compile.c   :: block()         진행중
 compile.c   :: constDecl()     진행중
+
+0828
+compile.c   :: constDecl()     진행중
+               ㄴ checkGet()   구현필요
+
+0829
+compile.c   :: constDecl()     구현 완료
+               ㄴ checkGet()   구현 완료 - 내부 함수 구현 모두 완료
+compile.c   :: varDecl()       진행중
+               ㄴ enterTvar(), errorMissingId() 구현필요               
