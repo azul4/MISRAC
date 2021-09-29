@@ -34,7 +34,7 @@ typedef struct tableE {
 static TableE nameTable[MAXTABLE];      // 이름 테이블
 static int tIndex = 0;                  // 이름 테이블의 인덱스
 static int level = -1;                  // 현재 블록 레벨
-static int index [MAXLEVEL] = {0};      // index[i]에는 블록 레벨 i의 마지막 인덱스가 들어있다.
+static int table_index [MAXLEVEL] = {0};      // table_index[i]에는 블록 레벨 i의 마지막 인덱스가 들어있다.
 static int addr  [MAXLEVEL] = {0};      //  addr[i]에는 블록 레벨 i의 마지막 변수의 주소가 들어있다.
 static int localAddr;                   // 현재 블록 마지막 변수의 주소
 static int tfIndex;
@@ -62,7 +62,7 @@ void blockBegin(int firstAddr)
         errorF("too many nested blocks");
     }    
 
-    index   [level]     = tIndex;
+    table_index   [level]     = tIndex;
     addr    [level]     = localAddr;
     localAddr           = firstAddr;
     level               = level + 1;
@@ -76,7 +76,7 @@ void blockBegin(int firstAddr)
 void blockEnd()
 {
     level--;
-    tIndex = index[level];   //바로 밖 블록의 정보 복구
+    tIndex = table_index[level];   //바로 밖 블록의 정보 복구
     localAddr = addr[level];
 }
 
@@ -95,7 +95,7 @@ int bLevel()
 //====================================================================================
 int fPars()
 {
-    return nameTable[index[level-1]].u.f.pars;
+    return nameTable[table_index[level-1]].u.f.pars;
 }
 
 

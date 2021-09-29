@@ -6,6 +6,8 @@
 #define MAXNAME 31 //이름의 최대 길이
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 typedef enum keys {
     Begin, End, If, Then, While, Do, Ret, Func, Var, Const, Odd, Write, WriteLn,

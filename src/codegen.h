@@ -8,7 +8,7 @@ typedef enum codes {    // 명령어 코드
 
 
 typedef enum ops {      // 연산 명령 코드
-    neg, add, sub, mul, div, odd, eq, ls, gr,
+    neg, add, sub, mul, my_div, odd, eq, ls, gr,
     neq, lseq, greq, wrt, wrl
 } Operator;
 

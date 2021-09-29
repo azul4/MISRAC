@@ -113,7 +113,7 @@ void printCode(int i)
                 case add:  printf(",add\n"); break;
                 case sub: printf(",sub\n"); break;
                 case mul: printf(",mul\n"); break;
-                case div: printf(",div\n"); break;
+                case my_div: printf(",my_div\n"); break;
                 case odd: printf(",odd\n"); break;
                 case eq: printf(",eq\n"); break;
                 case ls: printf(",ls\n"); break;
@@ -197,7 +197,7 @@ void execute()
                     case add:  --top; stack[top - 1] += stack[top];                      continue;
                     case sub:  --top; stack[top - 1] -= stack[top];                      continue;
                     case mul:  --top; stack[top - 1] *= stack[top];                      continue;
-                    case div:  --top; stack[top - 1] /= stack[top];                      continue;
+                    case my_div:  --top; stack[top - 1] /= stack[top];                      continue;
                     case odd:         stack[top - 1] = stack[top - 1] & 1;               continue;
                     case eq:   --top; stack[top - 1] = (stack[top - 1] == stack[top]);   continue;
                     case ls:   --top; stack[top - 1] = (stack[top - 1] <  stack[top]);   continue;

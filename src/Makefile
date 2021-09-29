@@ -18,8 +18,7 @@ all:
 	gcc -c -o $(OBJ)/compile.o compile.c -g
 	gcc -c -o $(OBJ)/getSource.o getSource.c -g
 	gcc -c -o $(OBJ)/table.o table.c -g
-	gcc -c -o $(OBJ)/main.o main.c -g
-	gcc -o $(TARGET) $(OBJ)/codegen.o $(OBJ)/compile.o $(OBJ)/getSource.o $(OBJ)/table.o $(OBJ)/main.o -g
+	gcc -o $(TARGET) $(OBJ)/codegen.o $(OBJ)/compile.o $(OBJ)/getSource.o $(OBJ)/table.o -g
 	
 
 

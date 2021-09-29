@@ -67,6 +67,25 @@ static void condition   (void);
 //====================================================================================
 static int  isStBeginKey(Token t);
 
+
+//====================================================================================
+// 함수명 : main
+// 
+//====================================================================================
+int main()
+{
+    char fileName[30] = "program.latex";
+    printf("program name = %s\n", fileName);
+    if (!openSource(fileName)) {
+        printf("open error\n");
+        return 1;
+    } 
+    if (compile()) {
+        execute(); 
+    }
+    closeSource();
+}
+
 //====================================================================================
 // 함수명 : compile
 // 
@@ -374,7 +393,7 @@ void term()
         token = nextToken();
         factor();
         if (k == Mult)  genCodeO(mul);
-        else            genCodeO(div);
+        else            genCodeO(my_div);
         k = token.kind;
     }
 }
