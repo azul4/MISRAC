@@ -4,9 +4,8 @@ OBJ = obj
 
 TARGET = compiler.out
 
-DIRS = ./main
+DIRS = ./
 SRCS = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
-SRCS += $(foreach dir, $(DIRS), $(wildcard $(dir)/*/*.c))
 
 OBJS = $(SRCS:.c=.o)
 TEMP = $(notdir $(OBJS))
@@ -14,16 +13,19 @@ TEMP = $(notdir $(OBJS))
 %.o: %.c
 	$(CC) -c -o $(OBJ)/$(notdir $@) $< -g
 
-all: $(TARGET) 
+all: 
+	gcc -c -o $(OBJ)/codegen.o codegen.c -g
+	gcc -c -o $(OBJ)/compile.o compile.c -g
+	gcc -c -o $(OBJ)/getSource.o getSource.c -g
+	gcc -c -o $(OBJ)/table.o table.c -g
+	gcc -c -o $(OBJ)/main.o main.c -g
+	gcc -o $(TARGET) $(OBJ)/codegen.o $(OBJ)/compile.o $(OBJ)/getSource.o $(OBJ)/table.o $(OBJ)/main.o -g
 	
-$(TARGET) : $(OBJS)
-	$(CC) -o $(TARGET) $(TEMP) -g ; \
-	mv $(TARGET) ..\
 
 
 
 clean :
-	rm -rf $(OBJ) \
+	rm -rf ./$(OBJ)/*.o
 	rm -rf *.out
 
 cleanlog:

@@ -16,7 +16,7 @@
 // 명령어의 형태를 기록합니다.
 //====================================================================================
 typedef struct inst {
-    Opcode opCode;
+    OpCode opCode;
     union {
         RelAddr addr;
         int value;
@@ -25,6 +25,110 @@ typedef struct inst {
 } Inst;
 
 static Inst code[MAXCODE];  // 목적 코드의 집합
+static int  cIndex   = -1;  // 최종적으로 생성한 명령어의 인덱스
+static void checkMax();     // 목적 코드의 인덱스 증가와 확인
+static void printCode(int i);       // 명령어 출력
+
+int nextCode()
+{
+    return cIndex + 1;
+}
+
+int genCodeV(OpCode op, int v)
+{
+    checkMax();
+    code[cIndex].opCode = op;
+    code[cIndex].u.value = v;
+    return cIndex;
+}
+
+int genCodeT(OpCode op, int ti)
+{
+    checkMax();
+    code[cIndex].opCode = op;
+    code[cIndex].u.addr = relAddr(ti);
+    return cIndex;
+}
+
+int genCodeO(Operator p)
+{
+    checkMax();
+    code[cIndex].opCode = opr;
+    code[cIndex].u.optr = p;
+    return cIndex;
+}
+
+int genCodeR()
+{
+    if (code[cIndex].opCode == ret) return cIndex;
+
+    checkMax();
+    code[cIndex].opCode = ret;
+    code[cIndex].u.addr.level = bLevel();
+    code[cIndex].u.addr.addr = fPars();
+    return cIndex;
+}
+
+void checkMax()
+{
+    if (++cIndex < MAXCODE) return;
+    errorF("too many code");
+}
+
+void backPatch(int i)
+{
+    code[i].u.value = cIndex = 1;
+}
+
+void listCode()
+{
+    int i;
+    printf("\ncode\n");
+    for(i = 0; i < cIndex; i++) {
+        printf("%3d: ", i);
+        printCode(i);
+    }
+}
+
+void printCode(int i)
+{
+    int flag;
+    switch(code[i].opCode) {
+        case lit: printf("lit"); flag = 1; break;
+        case opr: printf("opr"); flag = 3; break;
+        case lod: printf("lod"); flag = 2; break;
+        case sto: printf("sto"); flag = 2; break;
+        case cal: printf("cal"); flag = 2; break;
+        case ret: printf("ret"); flag = 2; break;
+        case ict: printf("ict"); flag = 1; break;
+        case jmp: printf("jmp"); flag = 1; break;
+        case jpc: printf("jpc"); flag = 1; break;
+    }
+    switch(flag) {
+        case 1: printf(",%d\n", code[i].u.value); return;
+        case 2: printf(",%d", code[i].u.addr.level); printf(",%d\n", code[i].u.addr.addr); return;
+        case 3: {
+            switch(code[i].u.optr) {
+                case neg: printf(",neg\n"); break;
+                case add:  printf(",add\n"); break;
+                case sub: printf(",sub\n"); break;
+                case mul: printf(",mul\n"); break;
+                case div: printf(",div\n"); break;
+                case odd: printf(",odd\n"); break;
+                case eq: printf(",eq\n"); break;
+                case ls: printf(",ls\n"); break;
+                case gr: printf(",gr\n"); break;
+                case neq: printf(",neq\n"); break;
+                case lseq: printf(",lseq\n"); break;
+                case greq: printf(",greq\n"); break;
+                case wrt: printf(",wrt\n"); break;
+                case wrl: printf(",wrl\n"); break;
+            }
+        }
+    }
+}
+
+
 
 //====================================================================================
 // 함수명 : execute
@@ -56,6 +160,7 @@ void execute()
     //====================================================================================
     do {
         i = code[pc++];
+        printf("i.opCode = %d\n", i.opCode);
         switch(i.opCode) {
             case lit: stack[top++] = i.u.value; break;
             case lod: stack[top++] = stack[display[i.u.addr.level] + i.u.addr.addr]; break;
@@ -72,7 +177,7 @@ void execute()
                 temp                    = stack[--top];                 // 스택 탑에 있는 것이 리턴값
                 top                     = display[i.u.addr.level];      // top을 호출한 때의 값으로 복구
                 display[i.u.addr.level] = stack[top];                   // 이전 디스플레이 복구
-                pc                      = stack[top + 1];               // .
+                pc                      = stack[top + 1];                // .
                 top                    -= i.u.addr.addr;                // 실인수만큼 탑을 제거
                 stack[top++]            = temp;                         // 리턴 값을 스택 탑에
                 break;
@@ -108,3 +213,4 @@ void execute()
         }
     } while(pc != 0);
 }
+

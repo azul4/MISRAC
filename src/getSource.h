@@ -25,17 +25,24 @@ typedef struct token {
     } u;
 }Token;
 
-Token nextToken();
+Token       nextToken       ();
+Token       checkGet        (Token t, KeyId k);
 
 
-int openSource(char fileName[]); // 소스 파일 열기
-void closeSource(void);
-void initSource();
-static void initCharClassT(); //선언 안되어있음
-char nextChar();
-Token nextToken();
-static void printcToken(void);
-void errorNoCheck();
-void errorF(char * m);
-void errorMessage(char *m);
-Token checkGet(Token t, KeyId k);
+int         openSource      (char fileName[]); // 소스 파일 열기
+void        closeSource     (void);
+void        initSource      ();
+void        finalSource     ();
+
+void        errorType       (char *m);
+void        errorInsert     (KeyId k);
+void        errorMissingId  (); //이름이 없다는 메시지를 html 파일에 삽입
+void        errorMissingOp  ();
+void        errorDelete     ();
+void        errorMessage    (char * m);
+void        errorF          (char * m);
+int         errorN          ();
+
+void        setIdKind       (KindT k);
+
+void        errorNoCheck    ();
