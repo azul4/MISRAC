@@ -1,0 +1,7 @@
+var x, y;
+
+begin
+    x := m; y:= n;
+    write x; write y;
+    writeln;
+end
